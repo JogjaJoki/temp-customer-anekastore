@@ -15,7 +15,7 @@ import Midtrans from "midtrans-client";
 const Checkout = () => {
     const { cart, setCart, syncCart } = useContext(CartContext);
     // const { login, setLogin } = useContext(LoginContext);
-    const [ newChart, setNewChart ] = useState([]);
+    const [ newCart, setNewCart ] = useState([]);
     const { isLoggedIn, setIsLoggedIn, login, logout } = useAuth();
     const [ total, setTotal ] = useState(0);
     // const { transaction, setTransaction } = useContext(TransactionContext);
@@ -54,30 +54,32 @@ const Checkout = () => {
     }, []);
 
     useEffect(()=>{
+        console.log(checkoutCart, 'checkout chart');
         isLoggedIn ? () => {} : history('/login');
+        let tempTotal = 0;
+        let weightTotal = 0;
         for(const i of cart){
             console.log(i);
             for(const j of checkoutCart){
                 console.log(j);
                 if(parseInt(i.id) === parseInt(j)){
                     console.log("find")
-                    setNewChart(prevCheckoutCart => [...prevCheckoutCart, i]);
-                    console.log(newChart);
+                    console.log(i)
+                    setNewCart(prevCheckoutCart => [...prevCheckoutCart, i]);
+                    console.log(newCart, 'new chart');
+                    tempTotal = parseInt(tempTotal) + (parseInt(i.amount) * parseInt(i.item.price))
+                    weightTotal = parseInt(weightTotal) + (parseInt(i.amount) * parseInt(i.item.weight))
                 }
             }
         }
-    }, []);
-
-    useEffect(()=>{
-        let tempTotal = 0;
-        let weightTotal = 0;
-        for(const c of cart){
-            tempTotal = parseInt(tempTotal) + (parseInt(c.amount) * parseInt(c.item.price))
-            weightTotal = parseInt(weightTotal) + (parseInt(c.amount) * parseInt(c.item.weight))
-        }
         setTotal(tempTotal);
         setWeight(weightTotal);
-    }, [cart]);
+    }, []);
+
+    // useEffect(()=>{
+    //     for(const c of checkoutCart){
+    //     }
+    // }, [checkoutCart]);
 
     useEffect(() => {
         const snapSrcUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
@@ -96,7 +98,7 @@ const Checkout = () => {
     }, []);
 
     const makeTransaction = () => {
-        let cartsToCheckout = newChart.map(item => item.id);
+        let cartsToCheckout = newCart.map(item => item.id);
         const formData = new FormData();
         formData.append('user_id', profile.id);
         cartsToCheckout.forEach(id => {
@@ -215,7 +217,7 @@ const Checkout = () => {
                     <div className="container-fluid">
                         <ul>
                         {
-                            newChart && newChart.map((c) => {
+                            newCart && newCart.map((c) => {
                                 return (
                                     <div className="row align-items-center" key={c.id}>
                                         <div className="col align-items-center d-flex">

@@ -31,11 +31,11 @@ const RelatedProduct = ({ productId }) => {
                         productList && productList.map((p) => (
                             <div className="col-md-3 col-lg-3 mb-2 shadow-sm" key={p.id}>
                                 <div className='container-fluid border p-3 bg-light shadow-md'>
-                                    <Link to={`/product/product-detail/${p.id}`} >
+                                    <a href={`/product/product-detail/${p.id}`} onClick={() => window.location.reload()} >
                                         <div className={`${'rounded-3'}`}>
                                             <img src={require(`/assets/product/${p.photo}`)} alt='' className='img-fluid'/>
                                         </div>
-                                    </Link>
+                                    </a>
                                     <div className='text-start'>
                                         {/* <div className='fw-light'>{`Telah Terjual : ${p.terjual}`}</div> */}
                                         <div className='fw-light'>{`Telah Terjual : 20`}</div>
@@ -47,10 +47,10 @@ const RelatedProduct = ({ productId }) => {
                                         </div>
                                         <div className='d-flex justify-content-between'>
                                             <span className='fw-bold'>{p.price}</span>
-                                            <Link to={`/product/product-detail/${p.id}`} className="btn primary-color d-flex">
+                                            <a href={`/product/product-detail/${p.id}`} onClick={() => window.location.reload()} className="btn primary-color d-flex">
                                                 <img src={CartImage} width={20} alt="cart"/>
                                                 <span className='ms-1'>Beli</span>
-                                            </Link>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
