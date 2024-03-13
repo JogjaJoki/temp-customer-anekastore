@@ -19,7 +19,7 @@ const Checkout = () => {
     const { isLoggedIn, setIsLoggedIn, login, logout } = useAuth();
     const [ total, setTotal ] = useState(0);
     // const { transaction, setTransaction } = useContext(TransactionContext);
-    const { checkoutCart, setCheckoutCart } = useContext(CheckoutCartContext);
+    const { checkoutCart, setCheckoutCart, syncCheckoutCart } = useContext(CheckoutCartContext);
     const [ profile, setProfile ] = useState(null);
     const [ userDetail, setUserDetail ] = useState();
     const { token, setToken } = useUserToken();
@@ -54,26 +54,30 @@ const Checkout = () => {
     }, []);
 
     useEffect(()=>{
-        console.log(checkoutCart, 'checkout chart');
         isLoggedIn ? () => {} : history('/login');
-        let tempTotal = 0;
-        let weightTotal = 0;
-        for(const i of cart){
-            console.log(i);
-            for(const j of checkoutCart){
-                console.log(j);
-                if(parseInt(i.id) === parseInt(j)){
-                    console.log("find")
-                    console.log(i)
-                    setNewCart(prevCheckoutCart => [...prevCheckoutCart, i]);
-                    console.log(newCart, 'new chart');
-                    tempTotal = parseInt(tempTotal) + (parseInt(i.amount) * parseInt(i.item.price))
-                    weightTotal = parseInt(weightTotal) + (parseInt(i.amount) * parseInt(i.item.weight))
-                }
-            }
+        async function fetchData() {
+                try{
+                    const data = await syncCheckoutCart();
+                    console.log(checkoutCart, 'checkout chart');   
+                    console.log(newCart, 'new chart');  
+                    let tempTotal = 0;
+                    let weightTotal = 0;
+
+
+                    for(const i of data){
+                        tempTotal = parseInt(tempTotal) + ((parseInt(i.amount) * parseInt(i.product.price)) - parseInt(i.total_diskon))
+                        weightTotal = parseInt(weightTotal) + (parseInt(i.amount) * parseInt(i.product.weight))
+                    }
+                    setNewCart(data);   
+                    setTotal(tempTotal);
+                    setWeight(weightTotal);
+
+
+                }catch(err){
+                    console.error(error.message);
+                }          
         }
-        setTotal(tempTotal);
-        setWeight(weightTotal);
+        fetchData();
     }, []);
 
     // useEffect(()=>{
@@ -106,6 +110,8 @@ const Checkout = () => {
         });
         formData.append('courier', courier);
         formData.append('service', service);
+        formData.append('total', total);
+        formData.append('deliveryoption', deliveryOption);
         
 
         axios.post(Endpoint.BASE_URL + Endpoint.MAKEORDER, formData,
@@ -210,6 +216,9 @@ const Checkout = () => {
                                 <h2 className="h4 my-auto">Berat Total</h2>
                             </div>
                             <div className="col text-muted text-center">
+                                <h2 className="h4 my-auto">Total Diskon</h2>
+                            </div>
+                            <div className="col text-muted text-center">
                                 <h2 className="h4 my-auto">Total Harga</h2>
                             </div>
                         </div>
@@ -234,7 +243,10 @@ const Checkout = () => {
                                             <span>{ parseInt(c.amount) * parseInt(c.item.weight) } gram</span>
                                         </div>
                                         <div className="col text-center">
-                                            <span className="text-muted">{ parseInt(c.amount) * parseInt(c.item.price) }</span>
+                                            <span className="text-muted">{ parseInt(c.total_diskon) }</span>
+                                        </div>
+                                        <div className="col text-center">
+                                            <span className="text-muted">{ (parseInt(c.amount) * parseInt(c.item.price)) - parseInt(c.total_diskon) }</span>
                                         </div>
                                     </div>
                                 );

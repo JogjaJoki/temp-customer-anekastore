@@ -29,6 +29,7 @@ const ProductDetail = () => {
         })
         .then((response) => {
             setProduct(response.data.product);
+            console.log(response.data.product)
         })
         .catch((error) => {
             console.error('Gagal melakukan permintaan:', error);
@@ -91,11 +92,15 @@ const ProductDetail = () => {
                                 </tr>
                                 <tr>
                                     <th scope="col" className='text-muted'>Pengiriman</th>
-                                    <th scope="col">JNE - TIKI - POS</th>
+                                    <th scope="col">JNE - TIKI - POS - Pengiriman Toko</th>
                                 </tr>
                                 <tr>
                                     <th scope="col" className='text-muted'>Paket</th>
-                                    <th scope="col">Satuan</th>
+                                    <th scope="col">{
+                                        product && product.discounts.map((e, index) => (
+                                            <div key={index} className="mb-2">{ `${e.constraint} Dus ${parseInt(product.price) - parseInt(e.discounts)}` }</div>
+                                        ))
+                                    }</th>
                                 </tr>
                                 <tr>
                                     <th scope="col" className='text-muted'>Kuantitas</th>

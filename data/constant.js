@@ -31,6 +31,7 @@ const Endpoint = {
     GETCITYBYID : "/get-city-by-id",
     GETCART : "/get-cart",
     ADDCART : "/add-cart",
+    SYNCCART : "/sync-cart",
     ADDCARTONE : "/add-item-cart",
     UPDATECART : "/update-cart",
     DELETECART : "/delete-cart",
